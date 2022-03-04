@@ -1,5 +1,6 @@
 from ipaddress import collapse_addresses
 from tkinter import *
+from turtle import width
 from PIL import Image, ImageTk
 import sqlite3
 import random
@@ -33,22 +34,34 @@ def checkin():
 
     #Create Cursor
     c = conn.cursor()
+    
+    select_id = fname.get()
 
-    c.execute("SELECT *, fname From students")
+    c.execute("UPDATE students SET classes = classes + 1 WHERE fname = '" + select_id + "'")
+
+    c.execute("SELECT * from students WHERE fname = :fname",
+        {
+
+            'fname': select_id
+        }
+    )
     records = c.fetchall()
-    for row in c.fetchall():
-        print(row[1])
-        print(row[2])
-        print(row[3])
     print(records)
     print_records = ''
     for record in records[0]:
         print_records += str(record) + "\n"
-
+    
     query_label = Label(root, text="Student Info")
     query_label.grid(row=8,column=0)
-    query_data = Label(root, text=print_records)
-    query_data.grid(row=9,column=0)
+    output(print_records)
+    #query_data = Label(root, text=print_records)
+    #query_data.grid(row=9,column=0)
+
+    #close DB
+    conn.commit()
+
+    #close Connection
+    conn.close()
 
 
 
@@ -62,14 +75,17 @@ def submit():
     c = conn.cursor()
 
     #Insert into table
-    c.execute("INSERT INTO students VALUES(:fname, :lname, :classes, :sid)",
-            {   'sid': str(uuid.uuid4()).replace('-',''), 
-                'fname': fname.get(),
+    c.execute("INSERT INTO students VALUES(:fname, :lname, :classes)",
+            {   'fname': fname.get(),
                 'lname': lname.get(),
                 'classes': "1"
 
             }
     )
+
+    fname.delete(0,END)
+    lname.delete(0,END)
+    classes.delete(0,END)
 
     #close DB
     conn.commit()
@@ -77,6 +93,15 @@ def submit():
     #close Connection
     conn.close()
 
+
+def cls():
+    fname.delete(0,END)
+    lname.delete(0,END)
+    classes.delete(0,END)
+    print_records = ''
+    #query_data = Label(root)
+    #query_data.grid(row=9,column=0)
+    
 
 
 #Create Boxes
@@ -86,6 +111,8 @@ lname = Entry(root, width=30)
 lname.grid(row=1, column=1)
 classes = Entry(root, width=30)
 classes.grid(row=2, column=1)
+output = Text(root, width=45, height=15 )
+output.grid(row=9,column=0, columnspan=3)
 
 #Create Labels
 fname_label = Label(root, text="First Name")
@@ -104,6 +131,9 @@ new_student.grid(row=6, column=1,)
 checkin = Button(root, text="Checkin", command=checkin)
 checkin.grid(row=6, column=0,)
 
+#Create Checkin Button
+cls = Button(root, text="Clear Screen", command=cls)
+cls.grid(row=6, column=2,)
 
 
 
