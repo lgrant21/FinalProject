@@ -1,5 +1,6 @@
 from ipaddress import collapse_addresses
 from tkinter import *
+import tkinter.font as font
 from turtle import width
 from PIL import Image, ImageTk
 import sqlite3
@@ -57,14 +58,34 @@ def checkin():
     output.config(state="normal")
     output.insert(0.0,print_records)
     output.config(state="disabled")
+    ty = Tk()
+    ty.iconbitmap("tytkd.ico")
 
+    
+
+    def exit2():
+        fname.delete(0,END)
+        lname.delete(0,END)
+        output.config(state="normal")
+        output.delete(0.0,END)
+        output.config(state="disabled")
+        ty.destroy()
+        
+     #Adds text to say thank you   
+    thankyou_label = Label(ty,font=("Arial", 48),text="Thank you for checking in")
+    thankyou_label.grid(row=0, column=1)
+      #Create close button2
+    myFont = font.Font(size=98, weight='bold')
+    tyclose_btn= Button(ty,text="Exit",command=exit2,borderwidth=0,height=10,width=100)
+    tyclose_btn['font'] = myFont
+    tyclose_btn.grid(row=1, column=1)
+    
 
     #close DB
     conn.commit()
 
     #close Connection
     conn.close()
-
 
 
     
@@ -87,7 +108,6 @@ def submit():
 
     fname.delete(0,END)
     lname.delete(0,END)
-    classes.delete(0,END)
 
     #close DB
     conn.commit()
@@ -99,10 +119,18 @@ def submit():
 def cls():
     fname.delete(0,END)
     lname.delete(0,END)
-    classes.delete(0,END)
     output.config(state="normal")
     output.delete(0.0,END)
     output.config(state="disabled")
+
+#Clears the main Screen after Checkin
+root.protocol("WM_DELETE_WINDOW", cls) 
+
+#Create close button2
+close = PhotoImage(file='exitbutton.png')
+close_btn= Button(root, image=close,command= exit,borderwidth=0,height=50,width=100)
+close_btn.grid(row=11, column=1,columnspan=6)
+    
 
 
 def exit():
@@ -119,10 +147,9 @@ fname = Entry(root, width=30)
 fname.grid(row=0, column=1)
 lname = Entry(root, width=30)
 lname.grid(row=1, column=1)
-classes = Entry(root, width=30)
-classes.grid(row=2, column=1)
 output = (Text(root, width=45, height=15 ))
 output.grid(row=9,column=0, columnspan=3)
+
 
 
 #Create Labels
@@ -130,13 +157,14 @@ fname_label = Label(root, text="First Name")
 fname_label.grid(row=0, column=0)
 lname_label = Label(root, text="Last Name")
 lname_label.grid(row=1, column=0)
-classes_label = Label(root, text="Classes Attended")
-classes_label.grid(row=2, column=0)
+exit_label = Label(root,text="Exit Program")
+exit_label.grid(row=10, column=1,columnspan=6)
+
 
 #Create close button
 close = PhotoImage(file='exitbutton.png')
 close_btn= Button(root, image=close,command= exit,borderwidth=0,height=50,width=100)
-close_btn.grid(row=10, column=1,columnspan=6)
+close_btn.grid(row=11, column=1,columnspan=6)
     
 
 
